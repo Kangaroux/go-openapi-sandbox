@@ -44,6 +44,12 @@ case "$1" in
         "$@"
     ;;
 
+"psql")
+    shift
+    args="$@"
+    docker-compose run --rm db bash -c "psql $conn_str $args"
+    ;;
+
 "swagger")
     shift
     swagger "$@"
