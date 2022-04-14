@@ -11,6 +11,7 @@ function swagger() {
         -it \
         -e GOPATH=$(go env GOPATH):/go \
         -e API_VERSION \
+        -e SWAGGER_GENERATE_EXTENSION \
         -v $cwd:$cwd \
         -w $cwd \
         quay.io/goswagger/swagger \
@@ -33,7 +34,7 @@ case "$1" in
 
     # Touch the file first so it has the correct permissions
     touch $out_file
-    swagger generate spec -o $out_file
+    SWAGGER_GENERATE_EXTENSION=false swagger generate spec -o $out_file
 
     # Restore the backup
     mv $docs_backup docs/docs.go

@@ -1,0 +1,106 @@
+basePath: /api/v1
+consumes:
+- application/json
+definitions:
+  User:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+      email:
+        type: string
+      id:
+        format: int64
+        type: integer
+      updated_at:
+        format: date-time
+        type: string
+      username:
+        type: string
+    type: object
+host: localhost
+info:
+  description: Lorem ipsum
+  title: Test API
+  version: 0.0.1
+paths:
+  /users:
+    get:
+      operationId: listUsers
+      responses:
+        "200":
+          $ref: '#/responses/listUserResponse'
+      tags:
+      - users
+    post:
+      operationId: createUser
+      responses:
+        "200":
+          $ref: '#/responses/userResponse'
+      tags:
+      - users
+  /users/{id}:
+    get:
+      operationId: getUser
+      responses:
+        "200":
+          $ref: '#/responses/userResponse'
+      tags:
+      - users
+produces:
+- application/json
+responses:
+  baseResponse:
+    description: ""
+    headers:
+      error:
+        description: An error message describing what went wrong
+        type: string
+      ok:
+        description: Whether the request was successful or not
+        type: boolean
+  listUserResponse:
+    description: ""
+    schema:
+      allOf:
+      - properties:
+          error:
+            description: An error message describing what went wrong
+            type: string
+          ok:
+            description: Whether the request was successful or not
+            type: boolean
+        type: object
+      - properties:
+          users:
+            items:
+              $ref: '#/definitions/User'
+            type: array
+        type: object
+  userResponse:
+    description: ""
+    schema:
+      allOf:
+      - properties:
+          error:
+            description: An error message describing what went wrong
+            type: string
+          ok:
+            description: Whether the request was successful or not
+            type: boolean
+        type: object
+      - properties:
+          user:
+            $ref: '#/definitions/User'
+        type: object
+schemes:
+- http
+- https
+security:
+- api_key: []
+securityDefinitions:
+  api_key:
+    in: header
+    name: KEY
+    type: apiKey
+swagger: "2.0"
