@@ -3,18 +3,17 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
 
+	api "github.com/kangaroux/go-openapi-test"
 	_ "github.com/kangaroux/go-openapi-test/docs"
 )
 
-func main() {
-	r := NewAPIRouter()
-	port := os.Getenv("SERVER_PORT")
+const (
+	port = "8000"
+)
 
-	if port == "" {
-		port = "8000"
-	}
+func main() {
+	r := api.NewAPIRouter()
 
 	log.Printf("Listening on port %s", port)
 

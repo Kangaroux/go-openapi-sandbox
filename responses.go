@@ -1,4 +1,4 @@
-package main
+package api
 
 // swagger:response baseResponse
 type BaseResponse struct {
