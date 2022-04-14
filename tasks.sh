@@ -3,6 +3,17 @@
 set -e
 cd ${0%/*}
 
+conn_str='postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/$POSTGRES_DB?sslmode=disable'
+
+function migrate() {
+    args="$@"
+    docker-compose run --rm api \
+        bash -c "migrate \
+            -path migrations \
+            -database `echo $conn_str` \
+            $args"
+}
+
 function swagger() {
     local cwd=$(pwd)
 
@@ -19,6 +30,20 @@ function swagger() {
 }
 
 case "$1" in
+"migrate")
+    shift
+    migrate "$@"
+    ;;
+
+"migrate:new")
+    shift
+    migrate \
+        create \
+        -dir migrations \
+        -ext sql \
+        "$@"
+    ;;
+
 "swagger")
     shift
     swagger "$@"
