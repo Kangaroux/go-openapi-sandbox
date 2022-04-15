@@ -7,4 +7,7 @@ require (
 	github.com/jmoiron/sqlx v1.3.4
 )
 
-require github.com/lib/pq v1.10.5 // indirect
+require (
+	github.com/Kangaroux/go-map-schema v0.6.1 // indirect
+	github.com/lib/pq v1.10.5 // indirect
+)

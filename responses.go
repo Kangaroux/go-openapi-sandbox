@@ -11,6 +11,15 @@ type BaseResponse struct {
 	OK bool `json:"ok"`
 }
 
+type FieldErrorResponse struct {
+	// in: body
+	Body struct {
+		BaseResponse
+
+		FieldErrors interface{} `json:"field_errors"`
+	}
+}
+
 // swagger:response userResponse
 type UserResponse struct {
 	// in: body
@@ -33,14 +42,21 @@ type ListUserResponse struct {
 	}
 }
 
-func InternalErrorResponse() BaseResponse {
-	return ErrorResponse("an internal server error occurred")
+func NewFieldErrorResponse(fieldErrors interface{}, msg string) FieldErrorResponse {
+	resp := FieldErrorResponse{}
+	resp.Body.Error = msg
+	resp.Body.FieldErrors = fieldErrors
+	return resp
 }
 
-func ErrorResponse(msg string) BaseResponse {
+func NewInternalErrorResponse() BaseResponse {
+	return NewErrorResponse("an internal server error occurred")
+}
+
+func NewErrorResponse(msg string) BaseResponse {
 	return BaseResponse{Error: msg}
 }
 
-func OKResponse() BaseResponse {
+func NewOKResponse() BaseResponse {
 	return BaseResponse{OK: true}
 }

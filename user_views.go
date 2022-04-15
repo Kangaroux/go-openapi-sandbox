@@ -3,11 +3,19 @@ package api
 import (
 	"log"
 	"net/http"
+	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 )
+
+var regexEmail *regexp.Regexp
+
+func init() {
+	regexEmail = regexp.MustCompile(`^.+@.+$`)
+}
 
 type UserAPI struct {
 	db    *sqlx.DB
@@ -47,13 +55,55 @@ func (api UserAPI) ListUsers(w http.ResponseWriter, req *http.Request) {
 // Responses:
 //   200: userResponse
 func (api UserAPI) CreateUser(w http.ResponseWriter, req *http.Request) {
-	if err := req.ParseForm(); err != nil {
-		log.Print(err)
-		WriteJSON(w, ErrorResponse("unable to parse form: "+err.Error()), 400)
+	type createUserForm struct {
+		Email    string `json:"email"`
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+
+	var err error
+	form := createUserForm{}
+
+	if !ParseRequestJSON(w, req, &form) {
 		return
 	}
 
-	WriteJSON(w, OKResponse())
+	form.Email = strings.TrimSpace(form.Email)
+	form.Username = strings.TrimSpace(form.Username)
+
+	fieldErrors := make(map[string]string)
+
+	var emailInUse, usernameInUse bool
+
+	if form.Email == "" {
+		fieldErrors["email"] = "cannot be blank"
+	} else if !regexEmail.MatchString(form.Email) {
+		fieldErrors["email"] = "must be a valid email address"
+	} else if emailInUse, err = api.users.Exists("email = $1", form.Email); err != nil {
+		log.Print(err)
+		WriteJSON(w, NewInternalErrorResponse(), 500)
+		return
+	} else if emailInUse {
+		fieldErrors["email"] = "email is already in use"
+	}
+
+	if form.Username == "" {
+		fieldErrors["username"] = "cannot be blank"
+	} else if len(form.Username) < 3 || len(form.Username) > 16 {
+		fieldErrors["username"] = "username must be between 3 and 16 characters"
+	} else if usernameInUse, err = api.users.Exists("username = $1", form.Username); err != nil {
+		log.Print(err)
+		WriteJSON(w, NewInternalErrorResponse(), 500)
+		return
+	} else if usernameInUse {
+		fieldErrors["username"] = "username is already in use"
+	}
+
+	if len(fieldErrors) > 0 {
+		WriteJSON(w, NewFieldErrorResponse(fieldErrors, "some fields need to be corrected").Body, 400)
+	} else {
+		WriteJSON(w, form)
+	}
 }
 
 // swagger:route GET /users/{id} users getUser
@@ -79,7 +129,7 @@ func (api UserAPI) GetUser(w http.ResponseWriter, req *http.Request) {
 
 	if err != nil {
 		log.Print(err)
-		WriteJSON(w, InternalErrorResponse(), 500)
+		WriteJSON(w, NewInternalErrorResponse(), 500)
 		return
 	}
 
@@ -87,9 +137,9 @@ func (api UserAPI) GetUser(w http.ResponseWriter, req *http.Request) {
 
 	if err != nil {
 		log.Print(err)
-		WriteJSON(w, InternalErrorResponse(), 500)
+		WriteJSON(w, NewInternalErrorResponse(), 500)
 	} else if u == nil {
-		WriteJSON(w, ErrorResponse("user does not exist"), 404)
+		WriteJSON(w, NewErrorResponse("user does not exist"), 404)
 	} else {
 		resp := UserResponse{}
 		resp.Body.OK = true
