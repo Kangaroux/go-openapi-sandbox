@@ -54,6 +54,8 @@ func (api UserAPI) CreateUser(w http.ResponseWriter, req *http.Request) {
 //
 // Responses:
 //   200: userResponse
+//   404: baseResponse
+//   500: baseResponse
 func (api UserAPI) GetUser(w http.ResponseWriter, req *http.Request) {
 	id, err := strconv.ParseInt(mux.Vars(req)["id"], 10, 64)
 

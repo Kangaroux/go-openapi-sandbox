@@ -6,6 +6,7 @@ type BaseResponse struct {
 	Error string `json:"error,omitempty"`
 
 	// Whether the request was successful or not
+	// required: true
 	OK bool `json:"ok"`
 }
 

@@ -45,6 +45,10 @@ paths:
       responses:
         "200":
           $ref: '#/responses/userResponse'
+        "404":
+          $ref: '#/responses/baseResponse'
+        "500":
+          $ref: '#/responses/baseResponse'
       tags:
       - users
 produces:
@@ -57,7 +61,9 @@ responses:
         description: An error message describing what went wrong
         type: string
       ok:
-        description: Whether the request was successful or not
+        description: |-
+          Whether the request was successful or not
+          required: true
         type: boolean
   listUserResponse:
     description: ""
@@ -70,6 +76,8 @@ responses:
           ok:
             description: Whether the request was successful or not
             type: boolean
+        required:
+        - ok
         type: object
       - properties:
           users:
@@ -88,6 +96,8 @@ responses:
           ok:
             description: Whether the request was successful or not
             type: boolean
+        required:
+        - ok
         type: object
       - properties:
           user:
