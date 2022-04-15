@@ -1,6 +1,6 @@
 package docs
 
-import api "github.com/kangaroux/go-openapi-test"
+import api "github.com/kangaroux/go-openapi-sandbox"
 
 // swagger:response baseResponse
 type SwaggerBaseResponse struct {

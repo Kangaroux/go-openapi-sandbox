@@ -9,8 +9,8 @@ import (
 	_ "github.com/lib/pq"
 
 	"github.com/jmoiron/sqlx"
-	api "github.com/kangaroux/go-openapi-test"
-	_ "github.com/kangaroux/go-openapi-test/docs"
+	api "github.com/kangaroux/go-openapi-sandbox"
+	_ "github.com/kangaroux/go-openapi-sandbox/docs"
 )
 
 const (

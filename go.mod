@@ -1,4 +1,4 @@
-module github.com/kangaroux/go-openapi-test
+module github.com/kangaroux/go-openapi-sandbox
 
 go 1.18
 
