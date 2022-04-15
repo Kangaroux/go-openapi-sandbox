@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/gorilla/mux"
@@ -101,9 +100,26 @@ func (api UserAPI) CreateUser(w http.ResponseWriter, req *http.Request) {
 
 	if len(fieldErrors) > 0 {
 		WriteJSON(w, NewFieldErrorResponse(fieldErrors, "some fields need to be corrected").Body, 400)
-	} else {
-		WriteJSON(w, form)
+		return
 	}
+
+	u := &User{
+		Email:    form.Email,
+		Username: form.Username,
+		Password: "TODO",
+	}
+
+	if err := api.users.Create(u); err != nil {
+		log.Print(err)
+		WriteJSON(w, NewInternalErrorResponse(), 500)
+		return
+	}
+
+	resp := UserResponse{}
+	resp.Body.OK = true
+	resp.Body.User = u
+
+	WriteJSON(w, resp.Body)
 }
 
 // swagger:route GET /users/{id} users getUser
@@ -125,15 +141,8 @@ func (api UserAPI) CreateUser(w http.ResponseWriter, req *http.Request) {
 //   404: baseResponse
 //   500: baseResponse
 func (api UserAPI) GetUser(w http.ResponseWriter, req *http.Request) {
-	id, err := strconv.ParseInt(mux.Vars(req)["id"], 10, 64)
-
-	if err != nil {
-		log.Print(err)
-		WriteJSON(w, NewInternalErrorResponse(), 500)
-		return
-	}
-
-	u, err := api.users.Get(id)
+	id := mux.Vars(req)["id"]
+	u, err := api.users.Get("id = $1", id)
 
 	if err != nil {
 		log.Print(err)
