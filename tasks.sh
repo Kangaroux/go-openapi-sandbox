@@ -60,6 +60,9 @@ case "$1" in
     ;;
 
 "spec")
+    # Don't bail on errors since we need to do some cleanup
+    set +e
+
     docs_backup=docs/.docs.go
     out_file=swagger.yml
 

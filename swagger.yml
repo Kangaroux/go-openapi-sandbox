@@ -41,7 +41,16 @@ paths:
       - users
   /users/{id}:
     get:
+      consumes:
+      - application/json
       operationId: getUser
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
       responses:
         "200":
           $ref: '#/responses/userResponse'
@@ -58,7 +67,9 @@ responses:
     description: ""
     headers:
       error:
-        description: An error message describing what went wrong
+        description: |-
+          An error message describing what went wrong
+          required: true
         type: string
       ok:
         description: |-
@@ -77,6 +88,7 @@ responses:
             description: Whether the request was successful or not
             type: boolean
         required:
+        - error
         - ok
         type: object
       - properties:
@@ -97,6 +109,7 @@ responses:
             description: Whether the request was successful or not
             type: boolean
         required:
+        - error
         - ok
         type: object
       - properties:

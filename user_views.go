@@ -47,10 +47,28 @@ func (api UserAPI) ListUsers(w http.ResponseWriter, req *http.Request) {
 // Responses:
 //   200: userResponse
 func (api UserAPI) CreateUser(w http.ResponseWriter, req *http.Request) {
-	w.Write([]byte("CreateUser"))
+	if err := req.ParseForm(); err != nil {
+		log.Print(err)
+		WriteJSON(w, ErrorResponse("unable to parse form: "+err.Error()), 400)
+		return
+	}
+
+	WriteJSON(w, OKResponse())
 }
 
 // swagger:route GET /users/{id} users getUser
+//
+// Consumes:
+//   - application/json
+//
+// Produces:
+//   - application/json
+//
+// Parameters:
+//   + name: id
+//     in: path
+//     type: integer
+//     required: true
 //
 // Responses:
 //   200: userResponse

@@ -3,7 +3,8 @@ package api
 // swagger:response baseResponse
 type BaseResponse struct {
 	// An error message describing what went wrong
-	Error string `json:"error,omitempty"`
+	// required: true
+	Error string `json:"error"`
 
 	// Whether the request was successful or not
 	// required: true
@@ -33,15 +34,13 @@ type ListUserResponse struct {
 }
 
 func InternalErrorResponse() BaseResponse {
-	return BaseResponse{
-		Error: "an internal server error occurred",
-		OK:    false,
-	}
+	return ErrorResponse("an internal server error occurred")
 }
 
 func ErrorResponse(msg string) BaseResponse {
-	return BaseResponse{
-		Error: msg,
-		OK:    false,
-	}
+	return BaseResponse{Error: msg}
+}
+
+func OKResponse() BaseResponse {
+	return BaseResponse{OK: true}
 }
