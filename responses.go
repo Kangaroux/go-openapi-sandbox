@@ -4,7 +4,7 @@ package api
 type BaseResponse struct {
 	// An error message describing what went wrong
 	// required: true
-	Error string `json:"error"`
+	Error string `json:"error,omitempty"`
 
 	// Whether the request was successful or not
 	// required: true
@@ -38,7 +38,8 @@ type ListUserResponse struct {
 		// swagger:allOf
 		BaseResponse
 
-		Users []User `json:"users"`
+		Count int     `json:"count"`
+		Users []*User `json:"users"`
 	}
 }
 

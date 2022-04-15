@@ -46,7 +46,20 @@ func (api UserAPI) Router(prefix string) *mux.Router {
 // Responses:
 //   200: listUserResponse
 func (api UserAPI) ListUsers(w http.ResponseWriter, req *http.Request) {
-	w.Write([]byte("ListUsers"))
+	users, err := api.users.List("")
+
+	if err != nil {
+		log.Print(err)
+		WriteJSON(w, NewInternalErrorResponse(), 500)
+		return
+	}
+
+	resp := ListUserResponse{}
+	resp.Body.OK = true
+	resp.Body.Count = len(users)
+	resp.Body.Users = users
+
+	WriteJSON(w, resp.Body)
 }
 
 // swagger:route POST /users users createUser

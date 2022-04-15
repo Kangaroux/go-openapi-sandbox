@@ -13,6 +13,7 @@ type UserService interface {
 	Count(where string, args ...interface{}) (int, error)
 	Exists(where string, args ...interface{}) (bool, error)
 	Get(where string, args ...interface{}) (*User, error)
+	List(query string, args ...interface{}) ([]*User, error)
 }
 
 type DBUserService struct {
@@ -66,7 +67,7 @@ func (s *DBUserService) Exists(where string, args ...interface{}) (bool, error) 
 
 func (s *DBUserService) Get(where string, args ...interface{}) (*User, error) {
 	u := User{}
-	q := "SELECT * FROM users WHERE " + where // + " LIMIT 1"
+	q := "SELECT * FROM users WHERE " + where
 
 	if err := s.db.Get(&u, q, args...); err != nil {
 		if err == sql.ErrNoRows {
@@ -77,4 +78,26 @@ func (s *DBUserService) Get(where string, args ...interface{}) (*User, error) {
 	}
 
 	return &u, nil
+}
+
+func (s *DBUserService) List(query string, args ...interface{}) ([]*User, error) {
+	q := "SELECT * FROM users " + query
+
+	rows, err := s.db.Queryx(q, args...)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	results := []*User{}
+
+	for rows.Next() {
+		u := &User{}
+		rows.StructScan(&u)
+		results = append(results, u)
+	}
+
+	return results, nil
 }
