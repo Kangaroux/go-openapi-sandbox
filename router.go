@@ -4,11 +4,15 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func NewAPIRouter() *mux.Router {
+type RouterAPIs struct {
+	User UserAPI
+}
+
+func NewAPIRouter(apis RouterAPIs) *mux.Router {
 	r := mux.NewRouter()
 	api := r.PathPrefix("/api/v1").Subrouter()
 
-	api.PathPrefix("/users").Handler(NewUserRouter("/api/v1/users"))
+	api.PathPrefix("/users").Handler(apis.User.Router("/api/v1/users"))
 
 	return r
 }

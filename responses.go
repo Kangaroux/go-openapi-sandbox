@@ -16,7 +16,7 @@ type UserResponse struct {
 		// swagger:allOf
 		BaseResponse
 
-		User User `json:"user"`
+		User *User `json:"user,omitempty"`
 	}
 }
 

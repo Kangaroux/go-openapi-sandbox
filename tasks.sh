@@ -50,6 +50,10 @@ case "$1" in
     docker-compose run --rm db bash -c "psql $conn_str $args"
     ;;
 
+"start")
+    docker-compose up --build
+    ;;
+
 "swagger")
     shift
     swagger "$@"

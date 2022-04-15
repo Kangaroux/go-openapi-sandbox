@@ -1,21 +1,36 @@
 package api
 
 import (
-	"fmt"
+	"encoding/json"
+	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/jmoiron/sqlx"
 )
 
-func NewUserRouter(prefix string) *mux.Router {
+type UserAPI struct {
+	db    *sqlx.DB
+	users UserService
+}
+
+func NewUserAPI(db *sqlx.DB) UserAPI {
+	return UserAPI{
+		db:    db,
+		users: NewUserService(db),
+	}
+}
+
+func (api UserAPI) Router(prefix string) *mux.Router {
 	r := mux.NewRouter()
 
 	// List
-	r.Path(prefix).Name("create user").Methods("POST").HandlerFunc(CreateUser)
-	r.Path(prefix).Name("list users").Methods("GET").HandlerFunc(ListUsers)
+	r.Path(prefix).Name("create user").Methods("POST").HandlerFunc(api.CreateUser)
+	r.Path(prefix).Name("list users").Methods("GET").HandlerFunc(api.ListUsers)
 
 	// Detail
-	r.Path(prefix + `/{id:\d+}`).Name("get user").Methods("GET").HandlerFunc(GetUser)
+	r.Path(prefix + `/{id:\d+}`).Name("get user").Methods("GET").HandlerFunc(api.GetUser)
 
 	return r
 }
@@ -24,7 +39,7 @@ func NewUserRouter(prefix string) *mux.Router {
 //
 // Responses:
 //   200: listUserResponse
-func ListUsers(w http.ResponseWriter, req *http.Request) {
+func (api UserAPI) ListUsers(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte("ListUsers"))
 }
 
@@ -32,7 +47,7 @@ func ListUsers(w http.ResponseWriter, req *http.Request) {
 //
 // Responses:
 //   200: userResponse
-func CreateUser(w http.ResponseWriter, req *http.Request) {
+func (api UserAPI) CreateUser(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte("CreateUser"))
 }
 
@@ -40,7 +55,33 @@ func CreateUser(w http.ResponseWriter, req *http.Request) {
 //
 // Responses:
 //   200: userResponse
-func GetUser(w http.ResponseWriter, req *http.Request) {
-	id := mux.Vars(req)["id"]
-	w.Write([]byte(fmt.Sprintf("GetUser: %s", id)))
+func (api UserAPI) GetUser(w http.ResponseWriter, req *http.Request) {
+	id, err := strconv.ParseInt(mux.Vars(req)["id"], 10, 64)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	resp := UserResponse{}
+	u, err := api.users.Get(id)
+
+	if err != nil {
+		log.Fatal(err)
+	} else if u == nil {
+		resp.Body.OK = false
+		resp.Body.Error = "user does not exist"
+		w.WriteHeader(404)
+	} else {
+		resp.Body.OK = true
+		resp.Body.User = u
+	}
+
+	serialized, err := json.Marshal(resp.Body)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	w.Header().Add("Content-Type", "application/json")
+	w.Write(serialized)
 }
