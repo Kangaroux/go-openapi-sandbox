@@ -2,6 +2,57 @@ basePath: /api/v1
 consumes:
 - application/json
 definitions:
+  BaseResponse:
+    properties:
+      error:
+        description: An error message describing what went wrong
+        type: string
+      ok:
+        description: Whether the request was successful or not
+        type: boolean
+    required:
+    - error
+    - ok
+    type: object
+  FieldErrorResponse:
+    allOf:
+    - properties:
+        error:
+          description: An error message describing what went wrong
+          type: string
+        ok:
+          description: Whether the request was successful or not
+          type: boolean
+      required:
+      - error
+      - ok
+      type: object
+    - properties:
+        field_errors:
+          type: object
+      type: object
+  ListUserResponse:
+    allOf:
+    - properties:
+        error:
+          description: An error message describing what went wrong
+          type: string
+        ok:
+          description: Whether the request was successful or not
+          type: boolean
+      required:
+      - error
+      - ok
+      type: object
+    - properties:
+        count:
+          format: int64
+          type: integer
+        users:
+          items:
+            $ref: '#/definitions/User'
+          type: array
+      type: object
   User:
     properties:
       created_at:
@@ -18,6 +69,23 @@ definitions:
       username:
         type: string
     type: object
+  UserResponse:
+    allOf:
+    - properties:
+        error:
+          description: An error message describing what went wrong
+          type: string
+        ok:
+          description: Whether the request was successful or not
+          type: boolean
+      required:
+      - error
+      - ok
+      type: object
+    - properties:
+        user:
+          $ref: '#/definitions/User'
+      type: object
 host: localhost
 info:
   description: Lorem ipsum
@@ -65,57 +133,20 @@ produces:
 responses:
   baseResponse:
     description: ""
-    headers:
-      error:
-        description: |-
-          An error message describing what went wrong
-          required: true
-        type: string
-      ok:
-        description: |-
-          Whether the request was successful or not
-          required: true
-        type: boolean
+    schema:
+      $ref: '#/definitions/BaseResponse'
+  fieldErrorResponse:
+    description: ""
+    schema:
+      $ref: '#/definitions/FieldErrorResponse'
   listUserResponse:
     description: ""
     schema:
-      allOf:
-      - properties:
-          error:
-            description: An error message describing what went wrong
-            type: string
-          ok:
-            description: Whether the request was successful or not
-            type: boolean
-        required:
-        - error
-        - ok
-        type: object
-      - properties:
-          users:
-            items:
-              $ref: '#/definitions/User'
-            type: array
-        type: object
+      $ref: '#/definitions/ListUserResponse'
   userResponse:
     description: ""
     schema:
-      allOf:
-      - properties:
-          error:
-            description: An error message describing what went wrong
-            type: string
-          ok:
-            description: Whether the request was successful or not
-            type: boolean
-        required:
-        - error
-        - ok
-        type: object
-      - properties:
-          user:
-            $ref: '#/definitions/User'
-        type: object
+      $ref: '#/definitions/UserResponse'
 schemes:
 - http
 - https

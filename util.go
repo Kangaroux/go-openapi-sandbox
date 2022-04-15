@@ -56,7 +56,7 @@ func ParseRequestJSON(w http.ResponseWriter, req *http.Request, out interface{})
 
 	// Return any field errors
 	if fieldErrors != nil {
-		WriteJSON(w, NewFieldErrorResponse(fieldErrors, "type mismatch on one or more fields").Body, 400)
+		WriteJSON(w, NewFieldErrorResponse(fieldErrors, "type mismatch on one or more fields"), 400)
 		return false
 	}
 

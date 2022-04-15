@@ -1,6 +1,5 @@
 package api
 
-// swagger:response baseResponse
 type BaseResponse struct {
 	// An error message describing what went wrong
 	// required: true
@@ -11,42 +10,53 @@ type BaseResponse struct {
 	OK bool `json:"ok"`
 }
 
-type FieldErrorResponse struct {
+// swagger:response baseResponse
+type SwaggerBaseResponse struct {
 	// in: body
-	Body struct {
-		BaseResponse
+	Body BaseResponse
+}
 
-		FieldErrors interface{} `json:"field_errors"`
-	}
+type FieldErrorResponse struct {
+	// swagger:allOf
+	BaseResponse
+	FieldErrors interface{} `json:"field_errors"`
+}
+
+// swagger:response fieldErrorResponse
+type SwaggerFieldErrorResponse struct {
+	// in: body
+	Body FieldErrorResponse
+}
+
+type UserResponse struct {
+	// swagger:allOf
+	BaseResponse
+	User *User `json:"user,omitempty"`
 }
 
 // swagger:response userResponse
-type UserResponse struct {
+type SwaggerUserResponse struct {
 	// in: body
-	Body struct {
-		// swagger:allOf
-		BaseResponse
+	Body UserResponse
+}
 
-		User *User `json:"user,omitempty"`
-	}
+type ListUserResponse struct {
+	// swagger:allOf
+	BaseResponse
+	Count int     `json:"count"`
+	Users []*User `json:"users"`
 }
 
 // swagger:response listUserResponse
-type ListUserResponse struct {
+type SwaggerListUserResponse struct {
 	// in: body
-	Body struct {
-		// swagger:allOf
-		BaseResponse
-
-		Count int     `json:"count"`
-		Users []*User `json:"users"`
-	}
+	Body ListUserResponse
 }
 
 func NewFieldErrorResponse(fieldErrors interface{}, msg string) FieldErrorResponse {
 	resp := FieldErrorResponse{}
-	resp.Body.Error = msg
-	resp.Body.FieldErrors = fieldErrors
+	resp.Error = msg
+	resp.FieldErrors = fieldErrors
 	return resp
 }
 

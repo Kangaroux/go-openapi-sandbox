@@ -54,12 +54,13 @@ func (api UserAPI) ListUsers(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	resp := ListUserResponse{}
-	resp.Body.OK = true
-	resp.Body.Count = len(users)
-	resp.Body.Users = users
+	resp := ListUserResponse{
+		Count: len(users),
+		Users: users,
+	}
+	resp.OK = true
 
-	WriteJSON(w, resp.Body)
+	WriteJSON(w, resp)
 }
 
 // swagger:route POST /users users createUser
@@ -112,7 +113,7 @@ func (api UserAPI) CreateUser(w http.ResponseWriter, req *http.Request) {
 	}
 
 	if len(fieldErrors) > 0 {
-		WriteJSON(w, NewFieldErrorResponse(fieldErrors, "some fields need to be corrected").Body, 400)
+		WriteJSON(w, NewFieldErrorResponse(fieldErrors, "some fields need to be corrected"), 400)
 		return
 	}
 
@@ -128,11 +129,10 @@ func (api UserAPI) CreateUser(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	resp := UserResponse{}
-	resp.Body.OK = true
-	resp.Body.User = u
+	resp := UserResponse{User: u}
+	resp.OK = true
 
-	WriteJSON(w, resp.Body)
+	WriteJSON(w, resp)
 }
 
 // swagger:route GET /users/{id} users getUser
@@ -163,9 +163,8 @@ func (api UserAPI) GetUser(w http.ResponseWriter, req *http.Request) {
 	} else if u == nil {
 		WriteJSON(w, NewErrorResponse("user does not exist"), 404)
 	} else {
-		resp := UserResponse{}
-		resp.Body.OK = true
-		resp.Body.User = u
+		resp := UserResponse{User: u}
+		resp.OK = true
 		WriteJSON(w, resp)
 	}
 }
