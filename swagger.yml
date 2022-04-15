@@ -29,7 +29,10 @@ definitions:
       type: object
     - properties:
         field_errors:
+          description: A mapping of field names and errors
           type: object
+      required:
+      - field_errors
       type: object
   ListUserResponse:
     allOf:
@@ -46,12 +49,17 @@ definitions:
       type: object
     - properties:
         count:
+          description: The number of users that were returned
           format: int64
           type: integer
         users:
+          description: A list of user objects
           items:
             $ref: '#/definitions/User'
           type: array
+      required:
+      - count
+      - users
       type: object
   User:
     properties:
@@ -85,6 +93,8 @@ definitions:
     - properties:
         user:
           $ref: '#/definitions/User'
+      required:
+      - user
       type: object
 host: localhost
 info:

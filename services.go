@@ -13,7 +13,7 @@ type UserService interface {
 	Count(where string, args ...interface{}) (int, error)
 	Exists(where string, args ...interface{}) (bool, error)
 	Get(where string, args ...interface{}) (*User, error)
-	List(query string, args ...interface{}) ([]*User, error)
+	List(query string, args ...interface{}) ([]User, error)
 }
 
 type DBUserService struct {
@@ -80,7 +80,7 @@ func (s *DBUserService) Get(where string, args ...interface{}) (*User, error) {
 	return &u, nil
 }
 
-func (s *DBUserService) List(query string, args ...interface{}) ([]*User, error) {
+func (s *DBUserService) List(query string, args ...interface{}) ([]User, error) {
 	q := "SELECT * FROM users " + query
 
 	rows, err := s.db.Queryx(q, args...)
@@ -91,10 +91,10 @@ func (s *DBUserService) List(query string, args ...interface{}) ([]*User, error)
 
 	defer rows.Close()
 
-	results := []*User{}
+	results := []User{}
 
 	for rows.Next() {
-		u := &User{}
+		u := User{}
 		rows.StructScan(&u)
 		results = append(results, u)
 	}

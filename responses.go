@@ -13,20 +13,33 @@ type BaseResponse struct {
 type FieldErrorResponse struct {
 	// swagger:allOf
 	BaseResponse
+
+	// A mapping of field names and errors
+	// required: true
+	// type: object
 	FieldErrors interface{} `json:"field_errors"`
 }
 
 type UserResponse struct {
 	// swagger:allOf
 	BaseResponse
-	User *User `json:"user,omitempty"`
+
+	// The user object
+	// required: true
+	User User `json:"user"`
 }
 
 type ListUserResponse struct {
 	// swagger:allOf
 	BaseResponse
-	Count int     `json:"count"`
-	Users []*User `json:"users"`
+
+	// The number of users that were returned
+	// required: true
+	Count int `json:"count"`
+
+	// A list of user objects
+	// required: true
+	Users []User `json:"users"`
 }
 
 func NewFieldErrorResponse(fieldErrors interface{}, msg string) FieldErrorResponse {

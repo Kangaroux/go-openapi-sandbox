@@ -117,13 +117,13 @@ func (api UserAPI) CreateUser(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	u := &User{
+	u := User{
 		Email:    form.Email,
 		Username: form.Username,
 		Password: "TODO",
 	}
 
-	if err := api.users.Create(u); err != nil {
+	if err := api.users.Create(&u); err != nil {
 		log.Print(err)
 		WriteJSON(w, NewInternalErrorResponse(), 500)
 		return
@@ -163,7 +163,7 @@ func (api UserAPI) GetUser(w http.ResponseWriter, req *http.Request) {
 	} else if u == nil {
 		WriteJSON(w, NewErrorResponse("user does not exist"), 404)
 	} else {
-		resp := UserResponse{User: u}
+		resp := UserResponse{User: *u}
 		resp.OK = true
 		WriteJSON(w, resp)
 	}
