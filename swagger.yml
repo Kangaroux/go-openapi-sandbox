@@ -102,6 +102,12 @@ info:
   title: Test API
   version: 0.0.1
 paths:
+  /schema:
+    get:
+      description: Returns a yaml of the OpenAPI schema
+      operationId: getSchema
+      produces:
+      - application/yaml
   /users:
     get:
       operationId: listUsers
