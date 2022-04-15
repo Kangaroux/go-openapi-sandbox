@@ -10,7 +10,7 @@ function migrate() {
     docker-compose run --rm api \
         bash -c "migrate \
             -path migrations \
-            -database `echo $conn_str` \
+            -database $conn_str \
             $args"
 }
 
