@@ -30,3 +30,17 @@ type ListUserResponse struct {
 		Users []User `json:"users"`
 	}
 }
+
+func InternalErrorResponse() BaseResponse {
+	return BaseResponse{
+		Error: "an internal server error occurred",
+		OK:    false,
+	}
+}
+
+func ErrorResponse(msg string) BaseResponse {
+	return BaseResponse{
+		Error: msg,
+		OK:    false,
+	}
+}

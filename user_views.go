@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
@@ -59,29 +58,22 @@ func (api UserAPI) GetUser(w http.ResponseWriter, req *http.Request) {
 	id, err := strconv.ParseInt(mux.Vars(req)["id"], 10, 64)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
+		WriteJSON(w, InternalErrorResponse(), 500)
+		return
 	}
 
-	resp := UserResponse{}
 	u, err := api.users.Get(id)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
+		WriteJSON(w, InternalErrorResponse(), 500)
 	} else if u == nil {
-		resp.Body.OK = false
-		resp.Body.Error = "user does not exist"
-		w.WriteHeader(404)
+		WriteJSON(w, ErrorResponse("user does not exist"), 404)
 	} else {
+		resp := UserResponse{}
 		resp.Body.OK = true
 		resp.Body.User = u
+		WriteJSON(w, resp)
 	}
-
-	serialized, err := json.Marshal(resp.Body)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	w.Header().Add("Content-Type", "application/json")
-	w.Write(serialized)
 }
